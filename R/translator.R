@@ -100,7 +100,7 @@ Translator <- R6::R6Class(
     #' expression to translate
     #' @param session Shiny server session (default: current reactive domain)
     t = function(keyword, ...) {
-      self$translate(keyword)
+      self$translate(keyword, ...)
     },
     #' @description
     #' Specify language of translation. It must exist in 'languages' field.
