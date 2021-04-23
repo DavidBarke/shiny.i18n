@@ -91,7 +91,7 @@ Translator <- R6::R6Class(
     #' @param keyword character or vector of characters with a word or
     #' expression to translate
     #' @param session Shiny server session (default: current reactive domain)
-    translate = function(keyword, session = shiny::getDefaultReactiveDomain()) {
+    translate = function(keyword, ..., session = shiny::getDefaultReactiveDomain()) {
       if (!is.null(session)) {
         translation_language <- if (!is.null(session$input$`i18n-state`)) {
           session$input$`i18n-state`
@@ -100,7 +100,7 @@ Translator <- R6::R6Class(
         }
         private$raw_translate(keyword, translation_language)
       } else {
-        private$try_js_translate(keyword, private$raw_translate(keyword))
+        private$try_js_translate(keyword, private$raw_translate(keyword), ...)
       }
     },
     #' @description
@@ -179,11 +179,16 @@ Translator <- R6::R6Class(
     automatic = FALSE,
     js = FALSE,
     translation_language = character(0),
-    try_js_translate = function(keyword, translation) {
+    try_js_translate = function(keyword, translation, ...) {
       if (!private$js) {
         return(translation)
       }
-      shiny::span(class = 'i18n', `data-key` = keyword, translation)
+      shiny::span(
+        class = 'i18n',
+        `data-key` = keyword,
+        `data-params` = paste(list(...), collapse = ","),
+        translation
+      )
     },
     raw_translate = function(keyword, translation_language) {
       if (missing(translation_language)) {

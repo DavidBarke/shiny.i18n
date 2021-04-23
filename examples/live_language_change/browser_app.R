@@ -48,7 +48,7 @@ server <- function(input, output, session) {
     bins <- seq(min(x), max(x), length.out = input$bins + 1)
     hist(x, breaks = bins,
          col = "darkgray", border = "white",
-         main = i18n$t("Histogram of x"), ylab = i18n$t("Frequency"))
+         main = i18n$translate("Histogram of x {1}", 5), ylab = i18n$t("Frequency"))
   })
 }
 

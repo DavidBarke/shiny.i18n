@@ -1,10 +1,21 @@
 var shinyi18n = new Shiny.InputBinding();
 
 let translate = function(key, new_lang) {
+  console.log(i18n_translations);
   return(i18n_translations
         .filter(cell => cell._row == key)
         .map(result => result[new_lang])[0]
   );
+};
+
+String.prototype.format = function() {
+  var x = this;
+
+  for (const i in arguments) {
+    x = x.replace("{" + i + "}", arguments[i]);
+  }
+
+  return x;
 };
 
 $.extend(shinyi18n, {
@@ -16,7 +27,13 @@ $.extend(shinyi18n, {
     $(document).find('.i18n').each(function() {
       var $word = $(this);
       var key = $word.data('key');
+      console.log(key);
+      console.log(new_lang);
       var key_translated = translate(key, new_lang);
+      console.log(key_translated);
+      var params = $word.data('params').split(",");
+      console.log(params);
+      key_translated.format(...params);
       $word.html(key_translated);
     });
     return new_lang;
