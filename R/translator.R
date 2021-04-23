@@ -91,25 +91,16 @@ Translator <- R6::R6Class(
     #' @param keyword character or vector of characters with a word or
     #' expression to translate
     #' @param session Shiny server session (default: current reactive domain)
-    translate = function(keyword, ..., session = shiny::getDefaultReactiveDomain()) {
-      if (!is.null(session)) {
-        translation_language <- if (!is.null(session$input$`i18n-state`)) {
-          session$input$`i18n-state`
-        } else {
-          private$translation_language
-        }
-        private$raw_translate(keyword, translation_language)
-      } else {
-        private$try_js_translate(keyword, private$raw_translate(keyword), ...)
-      }
+    translate = function(keyword, ...) {
+      private$try_js_translate(keyword, private$raw_translate(keyword), ...)
     },
     #' @description
     #' Wrapper to \code{translate} method.
     #' @param keyword character or vector of characters with a word or
     #' expression to translate
     #' @param session Shiny server session (default: current reactive domain)
-    t = function(keyword, session = shiny::getDefaultReactiveDomain()) {
-      self$translate(keyword, session)
+    t = function(keyword, ...) {
+      self$translate(keyword)
     },
     #' @description
     #' Specify language of translation. It must exist in 'languages' field.
