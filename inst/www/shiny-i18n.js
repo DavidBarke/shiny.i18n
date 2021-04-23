@@ -1,7 +1,6 @@
 var shinyi18n = new Shiny.InputBinding();
 
 let translate = function(key, new_lang) {
-  console.log(i18n_translations);
   return(i18n_translations
         .filter(cell => cell._row == key)
         .map(result => result[new_lang])[0]
@@ -24,16 +23,13 @@ $.extend(shinyi18n, {
   },
   getValue: function(el) {
     var new_lang = $(el).data("lang");
+    if (new_lang === undefined) return;
     $(document).find('.i18n').each(function() {
       var $word = $(this);
       var key = $word.data('key');
-      console.log(key);
-      console.log(new_lang);
       var key_translated = translate(key, new_lang);
-      console.log(key_translated);
-      var params = $word.data('params').split(",");
-      console.log(params);
-      key_translated.format(...params);
+      var params = $word.attr('data-params').split(",");
+      key_translated = key_translated.format(...params);
       $word.html(key_translated);
     });
     return new_lang;
