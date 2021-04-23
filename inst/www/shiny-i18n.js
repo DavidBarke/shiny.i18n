@@ -17,7 +17,7 @@ $.extend(shinyi18n, {
       var $word = $(this);
       var key = $word.data('key');
       var key_translated = translate(key, new_lang);
-      $word.text(key_translated);
+      $word.html(key_translated);
     });
     return new_lang;
   },
