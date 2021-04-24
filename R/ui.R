@@ -53,7 +53,6 @@ i18n_state <- function(init_language) {
 usei18n <- function(translator) {
   shiny::addResourcePath("shiny_i18n", system.file("www", package = "shiny.i18n"))
   js_file <- file.path("shiny_i18n", "shiny-i18n.js")
-  translator$use_js()
   translations <- translator$get_translations()
   key_translation <- translator$get_key_translation()
   translations[[key_translation]] <- rownames(translations)
