@@ -62,7 +62,7 @@ Translator <- R6::R6Class(
 
     #' @description
     #' Get dictionnary
-    get_dict = function() private$dict
+    get_dict = function() private$dict,
 
     #' @description
     #' Get all available languages

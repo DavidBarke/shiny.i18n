@@ -40,6 +40,7 @@ shinyApp(ui = ui, server = server)
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{Translator$new()}}
+\item \href{#method-get_dict}{\code{Translator$get_dict()}}
 \item \href{#method-get_languages}{\code{Translator$get_languages()}}
 \item \href{#method-get_language}{\code{Translator$get_language()}}
 \item \href{#method-translate}{\code{Translator$translate()}}
@@ -77,6 +78,16 @@ translation API.}
 }
 \if{html}{\out{</div>}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_dict"></a>}}
+\if{latex}{\out{\hypertarget{method-get_dict}{}}}
+\subsection{Method \code{get_dict()}}{
+Get dictionnary
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Translator$get_dict()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-get_languages"></a>}}
