@@ -39,7 +39,7 @@ $.extend(shinyi18n, {
       var params = $word.attr('data-params').split(",");
 
       var translation = translate(key, language)
-        .interpolate(i18nDict)
+        .interpolate(i18nDict[language])
         .interpolateParams(params);
 
       $word.html(translation);
