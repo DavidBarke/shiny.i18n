@@ -120,7 +120,7 @@ Translator <- R6::R6Class(
 
     interpolate = function(translation, params) {
       dict <- private$dict[[private$language]]
-      dict$.. <- params
+      dict$p_ <- params
 
       stringr::str_interp(translation, dict)
     },
