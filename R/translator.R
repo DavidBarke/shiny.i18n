@@ -180,7 +180,7 @@ Translator <- R6::R6Class(
 
     interpolate = function(translation, params) {
       for (i in seq_along(params)) {
-        pattern <- paste0("\\{", i, "\\}")
+        pattern <- paste0("\\{", i - 1, "\\}")
         translation <- sub(pattern, params[[i]], translation)
       }
 
