@@ -92,7 +92,18 @@ Translator <- R6::R6Class(
     #' expression to translate
     #' @param session Shiny server session (default: current reactive domain)
     translate = function(keyword, ...) {
-      private$try_js_translate(keyword, private$raw_translate(keyword), ...)
+      dots <- list(...)
+
+      translation <- private$raw_translate(keyword)
+
+      translation <- private$interpolate(translation, dots)
+
+      shiny::span(
+        class = 'i18n',
+        `data-key` = keyword,
+        `data-params` = paste(dots, collapse = ","),
+        translation
+      )
     },
     #' @description
     #' Wrapper to \code{translate} method.
@@ -156,10 +167,7 @@ Translator <- R6::R6Class(
     #' supported: \code{google}.
     at = function(keyword, api = "google") {
       self$automatic_translate(keyword, api)
-    },
-    #' @description
-    #' Call to wrap translation in span object. Used for browser-side translations.
-    use_js = function() private$js <- TRUE
+    }
   ),
   private = list(
     options = list(),
@@ -168,19 +176,17 @@ Translator <- R6::R6Class(
     languages = c(),
     translations = NULL,
     automatic = FALSE,
-    js = FALSE,
     translation_language = character(0),
-    try_js_translate = function(keyword, translation, ...) {
-      if (!private$js) {
-        return(translation)
+
+    interpolate = function(translation, params) {
+      for (i in seq_along(params)) {
+        pattern <- paste0("\\{", i, "\\}")
+        translation <- sub(pattern, params[[i]], translation)
       }
-      shiny::span(
-        class = 'i18n',
-        `data-key` = keyword,
-        `data-params` = paste(list(...), collapse = ","),
-        translation
-      )
+
+      translation
     },
+
     raw_translate = function(keyword, translation_language) {
       if (missing(translation_language)) {
         translation_language <- private$translation_language
@@ -198,6 +204,7 @@ Translator <- R6::R6Class(
       }
       tr
     },
+
     read_json = function(translation_file, key_translation) {
       private$mode <- "json"
       # TODO validate format of a json translation_file
@@ -212,6 +219,7 @@ Translator <- R6::R6Class(
       private$translations <- column_to_row(json_data$translation,
                                             private$key_translation)
     },
+
     read_csv = function(translation_path,
                         translation_csv_config,
                         separator = ",") {
