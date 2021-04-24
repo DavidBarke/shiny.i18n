@@ -60,7 +60,7 @@ usei18n <- function(translator) {
     shiny::tags$head(
       shiny::tags$script(
         glue::glue(
-          "var i18n_dict = {dict}",
+          "var i18nDict = {dict}",
           dict = jsonlite::toJSON(dict)
         )
       ),
