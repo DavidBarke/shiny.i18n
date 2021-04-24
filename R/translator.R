@@ -52,213 +52,92 @@ Translator <- R6::R6Class(
     #' @param separator_csv separator of CSV values (default ",")
     #' @param automatic logical flag, indicating if i18n should use an automatic
     #' translation API.
-    initialize = function(translation_csvs_path = NULL,
-                          translation_json_path = NULL,
-                          translation_csv_config = NULL,
-                          separator_csv = ",",
-                          automatic = FALSE) {
-      private$options <- .translator_options
-      if (!is.null(translation_csvs_path) && !is.null(translation_json_path))
-        stop(paste("Arguments 'translation_csvs_path' and",
-                   "'translation_json_path' are mutually exclusive."))
-      else if (!is.null(translation_csvs_path))
-        private$read_csv(translation_csvs_path,
-                         translation_csv_config,
-                         separator_csv)
-      else if (!is.null(translation_json_path))
-        private$read_json(translation_json_path)
-      else
-        if (isFALSE(automatic))
-          stop("You must provide either translation json or csv files.")
-      private$automatic <- automatic
-      private$key_translation <- private$languages[1]
-      private$translation_language <- private$key_translation
+    initialize = function(translation_json_path) {
+      private$dict <- jsonlite::fromJSON(translation_json_path)
+
+      private$languages <- names(private$dict)
+
+      private$language <- private$languages[1]
     },
+
+    #' @description
+    #' Get dictionnary
+    get_dict = function() private$dict
+
     #' @description
     #' Get all available languages
     get_languages = function() private$languages,
-    #' @description
-    #' Get whole translation matrix
-    get_translations = function() private$translations,
-    #' @description
-    #' Get active key translation
-    get_key_translation = function() private$key_translation,
+
     #' @description
     #' Get current target translation language
-    get_translation_language = function() private$translation_language,
+    get_language = function() private$language,
+
     #' @description
     #' Translates 'keyword' to language specified by 'set_translation_language'
     #' @param keyword character or vector of characters with a word or
     #' expression to translate
     #' @param session Shiny server session (default: current reactive domain)
     translate = function(keyword, ...) {
-      dots <- list(...)
+      params <- list(...)
 
       translation <- private$raw_translate(keyword)
 
-      translation <- private$interpolate(translation, dots)
+      translation <- private$interpolate(translation, params)
 
       shiny::span(
         class = 'i18n',
         `data-key` = keyword,
-        `data-params` = paste(dots, collapse = ","),
+        `data-params` = paste(params, collapse = ","),
         translation
       )
     },
+
     #' @description
     #' Wrapper to \code{translate} method.
-    #' @param keyword character or vector of characters with a word or
+    #' @param keyword Character or vector of characters with a word or
     #' expression to translate
-    #' @param session Shiny server session (default: current reactive domain)
     t = function(keyword, ...) {
       self$translate(keyword, ...)
     },
+
     #' @description
     #' Specify language of translation. It must exist in 'languages' field.
-    #' @param transl_language character with a translation language code
-    set_translation_language = function(transl_language) {
-      "Specify language of translation. It must exist in 'languages' field."
-      if (isTRUE(private$automatic)) {
-        private$translation_language <- transl_language
-        return(transl_language)
+    #' @param language character with a translation language code
+    set_language = function(language) {
+      if (!(language %in% private$languages)) {
+        stop(
+          sprintf("'%s' not in Translator object languages", language)
+        )
       }
-      if (!(transl_language %in% private$languages))
-        stop(sprintf("'%s' not in Translator object languages",
-                     transl_language))
-      private$translation_language <- transl_language
-    },
-    #' @description
-    #' Parse date to format described in 'cultural_date_format' field in config.
-    #' @param date date object to format
-    parse_date = function(date) {
-      format(as.Date(date), format = private$options$cultural_date_format)
-    },
-    #' @description
-    #' Numbers parser. Not implemented yet.
-    #' @param number numeric or character with number
-    #' @return character with number formatting
-    parse_number = function(number) {
-      warning("This is not implemented yet. Sorry!")
-      number       # TODO numbers parsing
-    },
-    #' @description
-    #' Translates 'keyword' to language specified by 'set_translation_language'
-    #' using cloud service 'api'. You need to set API settings first.
-    #'
-    #' @param keyword character or vector of characters with a word or
-    #' expression to translate
-    #' @param api character with the name of the API you want to use. Currently
-    #' supported: \code{google}.
-    automatic_translate = function(keyword, api = "google") {
-      if (identical(private$translation_language, character(0)))
-        stop("Please provide a 'translation_language'. Check docs how.")
-      tr <- switch(api,
-                   google = translate_with_google_cloud(keyword,
-                                                        private$translation_language),
-                   stop("This 'api' is not supported.")
-      )
-      tr
-    },
-    #' @description
-    #' Wrapper to \code{automatic_translate} method
-    #' @param keyword character or vector of characters with a word or
-    #' expression to translate
-    #' @param api character with the name of the API you want to use. Currently
-    #' supported: \code{google}.
-    at = function(keyword, api = "google") {
-      self$automatic_translate(keyword, api)
+
+      private$language <- language
     }
   ),
   private = list(
-    options = list(),
-    mode = NULL,
-    key_translation = NULL,
-    languages = c(),
-    translations = NULL,
-    automatic = FALSE,
-    translation_language = character(0),
+    language = character(),
+    languages = character(),
+    dict = NULL,
 
     interpolate = function(translation, params) {
-      for (i in seq_along(params)) {
-        pattern <- paste0("\\{", i - 1, "\\}")
-        translation <- sub(pattern, params[[i]], translation)
+      dict <- private$dict[[private$language]]
+      dict$.. <- params
+
+      stringr::str_interp(translation, dict)
+    },
+
+    raw_translate = function(keyword) {
+      translation <- private$dict[[private$language]][[keyword]]
+
+      if (is.null(translation)) {
+        warning(
+          sprintf(
+            "There is no translation for key %s and language %s",
+            keyword, private$language
+          )
+        )
       }
 
       translation
-    },
-
-    raw_translate = function(keyword, translation_language) {
-      if (missing(translation_language)) {
-        translation_language <- private$translation_language
-      }
-      if (isTRUE(private$automatic))
-        warning(paste("Automatic translations are on. Use 'automatic_translate'",
-                      "or 'at' to translate via API."))
-      if (identical(translation_language, private$key_translation))
-        return(keyword)
-      tr <- as.character(private$translations[keyword, translation_language])
-      if (anyNA(tr)){
-        warning(sprintf("'%s' translation does not exist.",
-                        keyword[which(is.na(tr))]))
-        tr[which(is.na(tr))] <- keyword[which(is.na(tr))]
-      }
-      tr
-    },
-
-    read_json = function(translation_file, key_translation) {
-      private$mode <- "json"
-      # TODO validate format of a json translation_file
-      # Update the list of options, or take a default from config.
-      json_data <- fromJSON(translation_file)
-      common_fields <- intersect(names(json_data), names(options))
-      private$options <- modifyList(private$options, json_data[common_fields])
-      private$languages <- as.vector(json_data$languages)
-      private$key_translation <- private$languages[1]
-      # To make sure that key translation is always first in vector
-      private$languages <- unique(c(private$key_translation, private$languages))
-      private$translations <- column_to_row(json_data$translation,
-                                            private$key_translation)
-    },
-
-    read_csv = function(translation_path,
-                        translation_csv_config,
-                        separator = ",") {
-      private$mode <- "csv"
-      local_config <- load_local_config(translation_csv_config)
-      private$options <- modifyList(private$options, local_config)
-
-      tmp_translation <- read_and_merge_csvs(translation_path, separator)
-      private$languages <- as.vector(colnames(tmp_translation))
-      private$key_translation <- private$languages[1]
-      private$translations <- column_to_row(tmp_translation,
-                                            private$key_translation)
     }
   )
 )
-
-#' Creates new i18n Translator object
-#'
-#' @param translation_csvs_path character with path to folder containing csv
-#' translation files. See more in  Details.
-#' @param translation_csv_config character with path to configuration file for
-#' csv option.
-#' @param translation_json_path character with path to JSON translation file.
-#' See more in  Details.
-#' @param automatic logical flag, indicating if i18n should use an automatic
-#' translation API.
-#'
-#' @return i18n object
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#'  i18n <- init_i18n(translation_csvs_path = "../csvdata/")
-#'  i18n <- init_i18n(translation_json_path = "translations.json")
-#' }
-init_i18n <- function(translation_csvs_path = NULL,
-                      translation_json_path = NULL,
-                      translation_csv_config = NULL,
-                      automatic = FALSE){
-  Translator$new(translation_csvs_path, translation_json_path,
-                 translation_csv_config, automatic)
-}

@@ -2,15 +2,14 @@
 #'
 #' This hidden div contain information about i18 translation state.
 #'
-#' @param init_language key language code
+#' @param language Initial language
 #'
 #' @return shiny tag with div \code{"i18n-state"}
 #' @import shiny
-i18n_state <- function(init_language) {
+i18n_state <- function(language) {
     shiny::tags$div(
       id = "i18n-state",
-      `data-keylang` = init_language,
-      `data-lang` = init_language,
+      `data-lang` = language,
       style = "visibility: hidden; margin: 0; padding: 0; overflow: hidden; max-height: 0;"
     )
 }
@@ -52,16 +51,23 @@ i18n_state <- function(init_language) {
 #' @export
 usei18n <- function(translator) {
   shiny::addResourcePath("shiny_i18n", system.file("www", package = "shiny.i18n"))
+
   js_file <- file.path("shiny_i18n", "shiny-i18n.js")
-  translations <- translator$get_translations()
-  key_translation <- translator$get_key_translation()
-  translations[[key_translation]] <- rownames(translations)
+
+  dict <- translator$get_dict()
+
   shiny::tagList(
     shiny::tags$head(
-      shiny::tags$script(glue::glue("var i18n_translations = {toJSON(translations, auto_unbox = TRUE)}")),
+      shiny::tags$script(
+        glue::glue(
+          "var i18n_dict = {dict}",
+          dict = jsonlite::toJSON(dict)
+        )
+      ),
       shiny::tags$script(src = js_file)
     ),
-    i18n_state(translator$key_translation)
+
+    i18n_state(translator$get_language())
   )
 }
 
@@ -76,5 +82,5 @@ usei18n <- function(translator) {
 #' @export
 #' @seealso usei18n
 update_lang <- function(session, language) {
-  session$sendInputMessage("i18n-state", list(lang = language))
+  session$sendInputMessage("i18n-state", list(language = language))
 }
