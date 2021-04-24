@@ -122,7 +122,17 @@ Translator <- R6::R6Class(
       dict <- private$dict[[private$language]]
       dict$p_ <- params
 
-      stringr::str_interp(translation, dict)
+      old_translation <- ""
+
+      while(
+        stringr::str_detect(translation, "\\$\\{")
+        && old_translation != translation
+      ) {
+        old_translation <- translation
+        translation <- stringr::str_interp(translation, dict)
+      }
+
+      translation
     },
 
     raw_translate = function(keyword) {

@@ -42,6 +42,14 @@ $.extend(shinyi18n, {
         .interpolate(i18nDict[language])
         .interpolateParams(params);
 
+      // Apply interpolation as long as ${ is present in translation and
+      // translation changes by interpolation
+      var oldTranslation;
+      while (translation.includes("${") && translation !== oldTranslation) {
+        oldTranslation = translation;
+        translation = translation.interpolate(i18nDict[language]);
+      }
+
       $word.html(translation);
     });
 

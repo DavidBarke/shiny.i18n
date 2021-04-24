@@ -1,8 +1,12 @@
 {
   "en": {
-    "greeting": "Welcome"
+    "greeting": "Welcome",
+    "user": "${greeting}",
+    "test": "${p_[[1]]}"
   },
   "de": {
-    "greeting": "Willkommen"
+    "greeting": "Willkommen",
+    "user": "${greeting}",
+    "test": "${p_[[1]]}"
   }
 }
