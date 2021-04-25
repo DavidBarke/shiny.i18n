@@ -61,7 +61,7 @@ Translator <- R6::R6Class(
     },
 
     #' @description
-    #' Get dictionnary
+    #' Get dictionary
     get_dict = function() private$dict,
 
     #' @description
@@ -72,12 +72,7 @@ Translator <- R6::R6Class(
     #' Get current target translation language
     get_language = function() private$language,
 
-    #' @description
-    #' Translates 'keyword' to language specified by 'set_translation_language'
-    #' @param keyword character or vector of characters with a word or
-    #' expression to translate
-    #' @param session Shiny server session (default: current reactive domain)
-    translate = function(keyword, ...) {
+    i = function(expression, ...) {
       params <- list(...)
 
       translation <- private$interpolate(keyword, params)
@@ -90,22 +85,30 @@ Translator <- R6::R6Class(
       )
     },
 
-    translate_chr = function(keyword, ...) {
+    #' @description
+    #' Translates 'keyword' to language specified by 'set_translation_language'
+    #' @param keyword character or vector of characters with a word or
+    #' expression to translate
+    #' @param session Shiny server session (default: current reactive domain)
+    t = function(keyword, ...) {
       params <- list(...)
 
-      private$interpolate(keyword, params)
-    },
+      translation <- private$translate(keyword)
 
-    #' @description
-    #' Wrapper to \code{translate} method.
-    #' @param keyword Character or vector of characters with a word or
-    #' expression to translate
-    t = function(keyword, ...) {
-      self$translate(keyword, ...)
+      translation <- private$interpolate(translation, params)
+
+      shiny::span(
+        class = 'i18n',
+        `data-key` = keyword,
+        `data-params` = paste(params, collapse = ","),
+        translation
+      )
     },
 
     t_chr = function(keyword, ...) {
-      self$translate_chr(keyword, ...)
+      params <- list(...)
+
+      private$interpolate(keyword, params)
     },
 
     #' @description
@@ -143,7 +146,7 @@ Translator <- R6::R6Class(
       translation
     },
 
-    raw_translate = function(keyword) {
+    translate = function(keyword) {
       translation <- private$dict[[private$language]][[keyword]]
 
       if (is.null(translation)) {
