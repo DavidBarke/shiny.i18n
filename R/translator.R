@@ -108,7 +108,9 @@ Translator <- R6::R6Class(
     t_chr = function(keyword, ...) {
       params <- list(...)
 
-      private$interpolate(keyword, params)
+      translation <- private$translate(keyword)
+
+      private$interpolate(translation, params)
     },
 
     #' @description
