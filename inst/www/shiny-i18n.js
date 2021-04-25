@@ -35,19 +35,17 @@ $.extend(shinyi18n, {
 
     $(document).find('.i18n').each(function() {
       var $word = $(this);
-      var key = $word.data('key');
+      var translation = $word.data('key');
       var params = $word.attr('data-params').split(",");
-
-      var translation = translate(key, language)
-        .interpolate(i18nDict[language])
-        .interpolateParams(params);
 
       // Apply interpolation as long as ${ is present in translation and
       // translation changes by interpolation
       var oldTranslation;
       while (translation.includes("${") && translation !== oldTranslation) {
         oldTranslation = translation;
-        translation = translation.interpolate(i18nDict[language]);
+        translation = translation
+          .interpolate(i18nDict[language])
+          .interpolateParams(params);
       }
 
       $word.html(translation);

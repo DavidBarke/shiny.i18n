@@ -13,24 +13,20 @@ Description: It provides easy internationalization of Shiny
     to translate reports, interactive visualizations or
     graphical elements as well.
 Depends: R (>= 3.3.0)
-Imports: yaml,
-         jsonlite,
+Imports: jsonlite,
          methods,
          stringr,
          R6,
-         glue,
          shiny,
-         rstudioapi,
          utils
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-URL: https://github.com/Appsilon/shiny.i18n
-BugReports: https://github.com/Appsilon/shiny.i18n/issues
+URL: https://github.com/DavidBarke/shiny.i18n
+BugReports: https://github.com/DavidBarke/shiny.i18n/issues
 RoxygenNote: 7.1.1
 Suggests:
     knitr,
-    googleLanguageR,
     rmarkdown,
     testthat,
     covr

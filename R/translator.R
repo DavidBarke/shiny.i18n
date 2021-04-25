@@ -80,9 +80,7 @@ Translator <- R6::R6Class(
     translate = function(keyword, ...) {
       params <- list(...)
 
-      translation <- private$raw_translate(keyword)
-
-      translation <- private$interpolate(translation, params)
+      translation <- private$interpolate(keyword, params)
 
       shiny::span(
         class = 'i18n',
@@ -92,12 +90,22 @@ Translator <- R6::R6Class(
       )
     },
 
+    translate_chr = function(keyword, ...) {
+      params <- list(...)
+
+      private$interpolate(keyword, params)
+    },
+
     #' @description
     #' Wrapper to \code{translate} method.
     #' @param keyword Character or vector of characters with a word or
     #' expression to translate
     t = function(keyword, ...) {
       self$translate(keyword, ...)
+    },
+
+    t_chr = function(keyword, ...) {
+      self$translate_chr(keyword, ...)
     },
 
     #' @description
