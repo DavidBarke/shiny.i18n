@@ -49,7 +49,7 @@ $.extend(shinyi18n, {
     $(document).find('.i18n-expr').each(function() {
       var $word = $(this);
       var expr = $word.attr('data-expr');
-      var params = $word.attr('data-params');
+      var params = $word.attr('data-params').split(",");
 
       var translation = that.interpolate(expr, params, language);
 
