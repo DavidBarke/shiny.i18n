@@ -35,25 +35,41 @@ $.extend(shinyi18n, {
 
     $(document).find('.i18n').each(function() {
       var $word = $(this);
-      var keyword = $word.data('key');
+      var keyword = $word.attr('data-key');
       var params = $word.attr('data-params').split(",");
 
       var translation = translate(keyword, language);
 
-      // Apply interpolation as long as ${ is present in translation and
-      // translation changes by interpolation
-      var oldTranslation;
-      while (translation.includes("${") && translation !== oldTranslation) {
-        oldTranslation = translation;
-        translation = translation
-          .interpolate(i18nDict[language])
-          .interpolateParams(params);
-      }
+      translation = this.interpolate(translation, params, language);
+
+      $word.html(translation);
+    });
+
+    $(document).find('.i18n-expr').each(function() {
+      var $word = $(this);
+      var expr = $word.attr('data-expression');
+      var params = $word.attr('data-params');
+
+      var translation = this.interpolate(expr, params, language);
 
       $word.html(translation);
     });
 
     return language;
+  },
+
+  interpolate: function(x, params, language) {
+    // Apply interpolation as long as ${ is present in translation and
+    // translation changes by interpolation
+    var oldX;
+    while (x.includes("${") && x !== oldX) {
+      oldX = x;
+      x = x
+        .interpolate(i18nDict[language])
+        .interpolateParams(params);
+    }
+
+    return x;
   },
 
   subscribe: function(el, callback) {

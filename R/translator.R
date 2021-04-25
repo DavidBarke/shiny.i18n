@@ -72,14 +72,14 @@ Translator <- R6::R6Class(
     #' Get current target translation language
     get_language = function() private$language,
 
-    i = function(expression, ...) {
+    i = function(expr, ...) {
       params <- list(...)
 
-      translation <- private$interpolate(keyword, params)
+      translation <- private$interpolate(expr, params)
 
       shiny::span(
-        class = 'i18n',
-        `data-key` = keyword,
+        class = 'i18n-expr',
+        `data-expr` = expr,
         `data-params` = paste(params, collapse = ","),
         translation
       )
