@@ -35,8 +35,10 @@ $.extend(shinyi18n, {
 
     $(document).find('.i18n').each(function() {
       var $word = $(this);
-      var translation = $word.data('key');
+      var keyword = $word.data('key');
       var params = $word.attr('data-params').split(",");
+
+      var translation = translate(keyword, language);
 
       // Apply interpolation as long as ${ is present in translation and
       // translation changes by interpolation
