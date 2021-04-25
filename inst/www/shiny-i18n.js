@@ -29,6 +29,7 @@ $.extend(shinyi18n, {
   },
 
   getValue: function(el) {
+    var that = this;
     var language = $(el).data("language");
 
     if (language === undefined) return;
@@ -40,7 +41,7 @@ $.extend(shinyi18n, {
 
       var translation = translate(keyword, language);
 
-      translation = this.interpolate(translation, params, language);
+      translation = that.interpolate(translation, params, language);
 
       $word.html(translation);
     });
@@ -50,7 +51,7 @@ $.extend(shinyi18n, {
       var expr = $word.attr('data-expression');
       var params = $word.attr('data-params');
 
-      var translation = this.interpolate(expr, params, language);
+      var translation = that.interpolate(expr, params, language);
 
       $word.html(translation);
     });
