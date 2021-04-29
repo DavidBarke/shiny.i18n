@@ -55,7 +55,7 @@ Translator <- R6::R6Class(
       params <- list(...)
 
       private$interpolate(expr, params)
-    }
+    },
 
     #' @description
     #' Translates 'keyword' to language specified by 'set_translation_language'
