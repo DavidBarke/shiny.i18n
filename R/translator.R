@@ -1,42 +1,8 @@
-#' Translator options
-.translator_options <- list(
-  cultural_bignumer_mark = NULL,
-  cultural_punctuation_mark = NULL,
-  cultural_date_format = NULL
-)
-
 #' Translator R6 Class
 #'
-#' This creates shinny.i18n Translator object used for translations.
-#' Now you can surround the pieces of the text you want to translate by
-#' one of the translate statements (ex.: \code{Translator$t("translate me")}).
-#' Find details in method descriptions below.
+#' Instances of this class may be used to translate
 #'
-#' @importFrom jsonlite fromJSON
-#' @import methods
-#' @import shiny
 #' @export
-#' @examples
-#' \dontrun{
-#'   i18n <- Translator$new(translation_json_path = "translation.json") # translation file
-#'   i18n$set_translation_language("it")
-#'   i18n$t("This text will be translated to Italian")
-#' }
-#'
-#' # Shiny example
-#' if (interactive()) {
-#' library(shiny)
-#' library(shiny.i18n)
-#'  #to run this example  make sure that you have a translation file
-#'  #in the same path
-#' i18n <- Translator$new(translation_json_path = "examples/data/translation.json")
-#' i18n$set_translation_language("pl")
-#' ui <- fluidPage(
-#'   h2(i18n$t("Hello Shiny!"))
-#' )
-#' server <- function(input, output) {}
-#' shinyApp(ui = ui, server = server)
-#' }
 Translator <- R6::R6Class(
   "Translator",
   public = list(
@@ -84,6 +50,12 @@ Translator <- R6::R6Class(
         translation
       )
     },
+
+    i_chr = function(expr, ...) {
+      params <- list(...)
+
+      private$interpolate(expr, params)
+    }
 
     #' @description
     #' Translates 'keyword' to language specified by 'set_translation_language'
@@ -158,6 +130,9 @@ Translator <- R6::R6Class(
             keyword, private$language
           )
         )
+
+        # Fall back to keyword
+        translation <- keyword
       }
 
       translation

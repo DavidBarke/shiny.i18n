@@ -1,4 +1,4 @@
-var shinyi18n = new Shiny.InputBinding();
+var i18n = new Shiny.InputBinding();
 
 let translate = function(key, language) {
   return i18nDict[language][key];
@@ -17,20 +17,20 @@ String.prototype.interpolateParams = function(params) {
 
   params.forEach((param, index) => {
     pattern = "${p_[[" + (index + 1) + "]]}";
-    str = str.replace(pattern, param);
+    str = str.replaceAll(pattern, param);
   });
 
   return str.valueOf();
 };
 
-$.extend(shinyi18n, {
+$.extend(i18n, {
   find: function(scope) {
     return $(scope).find('#i18n-state');
   },
 
   getValue: function(el) {
     var that = this;
-    var language = $(el).data("language");
+    var language = $(el).attr("data-language");
 
     if (language === undefined) return;
 
@@ -90,4 +90,4 @@ $.extend(shinyi18n, {
   }
 });
 
-Shiny.inputBindings.register(shinyi18n, 'shiny.shinyi18n');
+Shiny.inputBindings.register(i18n, 'i18n');
