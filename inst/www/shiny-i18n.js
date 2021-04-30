@@ -29,10 +29,12 @@ $.extend(i18n, {
   },
 
   getValue: function(el) {
-    var that = this;
-    var language = $(el).data("language");
+    return $(el).data("language");
+  },
 
-    if (language === undefined) return;
+  setValue: function(el) {
+    var language = data.language;
+    $(el).data('language', language);
 
     console.log("Start translation");
     $(document).find('.i18n').each(function() {
@@ -57,8 +59,6 @@ $.extend(i18n, {
       $word.html(translation);
     });
     console.log("Finish translation");
-
-    return language;
   },
 
   interpolate: function(x, params, language) {
@@ -80,7 +80,7 @@ $.extend(i18n, {
   },
 
   receiveMessage: function(el, data) {
-    $(el).data('language', data.language);
+    this.setValue(el, data);
     $(el).trigger('change');
   },
 
