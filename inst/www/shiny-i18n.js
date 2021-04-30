@@ -36,6 +36,8 @@ $.extend(i18n, {
     var language = data.language;
     $(el).data('language', language);
 
+    var that = this;
+
     console.log("Start translation");
     $(document).find('.i18n').each(function() {
       var $word = $(this);
