@@ -32,7 +32,7 @@ $.extend(i18n, {
     return $(el).data("language");
   },
 
-  setValue: function(el) {
+  setValue: function(el, data) {
     var language = data.language;
     $(el).data('language', language);
 
