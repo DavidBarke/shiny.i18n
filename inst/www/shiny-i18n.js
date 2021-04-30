@@ -30,7 +30,7 @@ $.extend(i18n, {
 
   getValue: function(el) {
     var that = this;
-    var language = $(el).attr("data-language");
+    var language = $(el).data("language");
 
     if (language === undefined) return;
 
