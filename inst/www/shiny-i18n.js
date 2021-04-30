@@ -38,7 +38,6 @@ $.extend(i18n, {
 
     var that = this;
 
-    console.log("Start translation");
     $(document).find('.i18n').each(function() {
       var $word = $(this);
       var keyword = $word.attr('data-key');
@@ -60,7 +59,6 @@ $.extend(i18n, {
 
       $word.html(translation);
     });
-    console.log("Finish translation");
   },
 
   interpolate: function(x, params, language) {
