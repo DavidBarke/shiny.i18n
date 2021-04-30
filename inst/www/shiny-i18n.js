@@ -34,6 +34,7 @@ $.extend(i18n, {
 
     if (language === undefined) return;
 
+    console.log("Start translation");
     $(document).find('.i18n').each(function() {
       var $word = $(this);
       var keyword = $word.attr('data-key');
@@ -55,6 +56,7 @@ $.extend(i18n, {
 
       $word.html(translation);
     });
+    console.log("Finish translation");
 
     return language;
   },
