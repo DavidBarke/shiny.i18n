@@ -9,7 +9,7 @@
 i18n_state <- function(language) {
     shiny::tags$div(
       id = "i18n-state",
-      `data-lang` = language,
+      `data-language` = language,
       style = "visibility: hidden; margin: 0; padding: 0; overflow: hidden; max-height: 0;"
     )
 }
